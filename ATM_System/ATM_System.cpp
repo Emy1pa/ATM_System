@@ -8,8 +8,15 @@ using namespace std;
 
 const string ClientsFileName = "Clients.txt";
 
+enum enMainMenuOptions {
+    eQuickWithdraw = 1, eNormalWithdraw = 2, eDeposit = 3,
+    eCheckBalance = 4, eLogout = 5
+};
+
 void Login();
 void ShowMainMenu();
+void PerformMainMenuOption(enMainMenuOptions MenuOptions);
+void GoBackToMainMenue();
 
 struct stClientInfo {
     string AccountNumber;
@@ -19,10 +26,6 @@ struct stClientInfo {
     int AccountBalance = 0;
 };
 
-enum enMainMenuOptions {
-    eQuickWithdraw = 1, eNormalWithdraw = 2, eDeposit = 3,
-    eCheckBalance = 4, eLogout = 5
-};
 
 stClientInfo CurrentClient;
 
@@ -132,6 +135,14 @@ enMainMenuOptions ReadMainMenuOption() {
     return (enMainMenuOptions)Choice;
 }
 
+void DisplayBalanceScreen() {
+    cout << "===========================================\n";
+    cout << "\t\tCheck Balance Screen\n";
+    cout << "===========================================\n";
+
+    cout << "Your Balance is " << CurrentClient.AccountBalance << endl;
+}
+
 void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
     switch (MainMenuOptions)
     {
@@ -146,6 +157,8 @@ void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
         break;
     case enMainMenuOptions::eCheckBalance:
         system("cls");
+        DisplayBalanceScreen();
+        GoBackToMainMenue();
         break;
     case enMainMenuOptions::eLogout:
         system("cls");
@@ -190,6 +203,12 @@ void Login(){
         LoginFailed = !LoadClientInfo(AccountNumber, PinCode);
     } while (LoginFailed);
 
+    ShowMainMenu();
+}
+
+void GoBackToMainMenue() {
+    cout << "\n\nPress any key to go back to Main Menue...";
+    system("pause>0");
     ShowMainMenu();
 }
 
