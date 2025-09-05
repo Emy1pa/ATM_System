@@ -19,6 +19,11 @@ struct stClientInfo {
     int AccountBalance = 0;
 };
 
+enum enMainMenuOptions {
+    eQuickWithdraw = 1, eNormalWithdraw = 2, eDeposit = 3,
+    eCheckBalance = 4, eLogout = 5
+};
+
 stClientInfo CurrentClient;
 
 vector <string> SplitString(string S1, string Delim){
@@ -105,6 +110,50 @@ bool LoadClientInfo(string AccountNumber, string PinCode){
         return false;
 }
 
+enMainMenuOptions ReadMainMenuOption() {
+    short Choice = 0;
+    while(true){
+    cout << "Choose what do you want to do ? [1 to 5]? ";
+    cin >> Choice;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        system("Color 4F");
+        cout << "\nInvalid input. Numbers only, please.\n";
+        continue;
+    }
+    if (Choice < 1 || Choice > 5) {
+        system("Color 4F");
+        cout << "\nInvalid choice. Please enter a number between 1 and 5.\n";
+        continue;
+    }
+    break;
+    }
+    return (enMainMenuOptions)Choice;
+}
+
+void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
+    switch (MainMenuOptions)
+    {
+    case enMainMenuOptions::eQuickWithdraw:
+        system("cls");
+        break;
+    case enMainMenuOptions::eNormalWithdraw:
+        system("cls");
+        break;
+    case enMainMenuOptions::eDeposit:
+        system("cls");
+        break;
+    case enMainMenuOptions::eCheckBalance:
+        system("cls");
+        break;
+    case enMainMenuOptions::eLogout:
+        system("cls");
+        Login();
+        break;
+    }
+}
+
 void ShowMainMenu() {
     system("cls");
     cout << "===========================================\n";
@@ -116,6 +165,8 @@ void ShowMainMenu() {
     cout << "\t[4] Check Balance.\n";
     cout << "\t[5] Logout.\n";
     cout << "===========================================\n";
+
+    PerformMainMenuOption(ReadMainMenuOption());
 }
 
 void Login(){
