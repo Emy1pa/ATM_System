@@ -22,7 +22,7 @@ enum enQuickWithdraw {
 void Login();
 void ShowMainMenu();
 void PerformMainMenuOption(enMainMenuOptions MenuOptions);
-void GoBackToMainMenue();
+void GoBackToMainMenu();
 
 struct stClientInfo {
     string AccountNumber;
@@ -121,7 +121,7 @@ bool LoadClientInfo(string AccountNumber, string PinCode){
 short GetBalanceToWithdraw(enQuickWithdraw QuickWithdraw){
     short Balance = 0;
     if (QuickWithdraw == enQuickWithdraw::enExit) {
-        GoBackToMainMenue();
+        GoBackToMainMenu();
         return 0;
     }
     switch (QuickWithdraw)
@@ -227,20 +227,20 @@ vector <stClientInfo> SaveClientsDataToFile(string FileName, vector <stClientInf
         for (stClientInfo C : vClients) {
             DataLine = ConvertClientRecordToLine(C);
             MyFile << DataLine << endl;
-       }
-    MyFile.close();
+        }
+        MyFile.close();
     }
     return vClients;
 }
 
-void UpdateClientInFile(stClientInfo UpdateClient){
+void UpdateClientInFile(stClientInfo UpdateClient) {
     vector <stClientInfo> vClients = LoadClientsDataFromFile(ClientsFileName);
 
     for (stClientInfo& C : vClients) {
         if (C.AccountNumber == UpdateClient.AccountNumber)
             C = UpdateClient;
-        SaveClientsDataToFile(ClientsFileName, vClients);
     }
+    SaveClientsDataToFile(ClientsFileName, vClients);
 }
 
 void PerformBalanceWithdraw(enQuickWithdraw QuickWithdraw) {
@@ -252,13 +252,13 @@ void PerformBalanceWithdraw(enQuickWithdraw QuickWithdraw) {
         QuickWithdraw = ReadBalanceWithdrawChoice();
         Balance = GetBalanceToWithdraw(QuickWithdraw);
     }
-        cout << "\nAre you sure you want to perform this transaction ? (Y/N) ? ";
-        cin >> Choice;
-        if (Choice == 'y' || Choice == 'Y') {
-            CurrentClient.AccountBalance -= Balance;
-            cout << "\nDone Successfully, new balance is " << CurrentClient.AccountBalance << endl;
-            UpdateClientInFile(CurrentClient);
-    } 
+    cout << "\nAre you sure you want to perform this transaction ? (Y/N) ? ";
+    cin >> Choice;
+    if (Choice == 'y' || Choice == 'Y') {
+        CurrentClient.AccountBalance -= Balance;
+        cout << "\nDone Successfully, new balance is " << CurrentClient.AccountBalance << endl;
+        UpdateClientInFile(CurrentClient);
+    }
 }
 
 void DisplayQuickWithdrawScreen() {
@@ -285,11 +285,17 @@ void DisplayNormalWithdrawScreen() {
 
 int ReadNormalWithdraw() {
     int WithdrawNumber = 0;
-    do
-    {
-    cout << "Enter an amount multiple of 5's ? ";
-    cin >> WithdrawNumber;
-    } while (WithdrawNumber < 0 || WithdrawNumber % 5 != 0);
+    while (true) {
+        cout << "Enter an amount multiple of 5's ? ";
+        cin >> WithdrawNumber;
+        if (cin.fail() || WithdrawNumber <= 0 || WithdrawNumber % 5 != 0 ){
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\nInvalid input! Please enter a positive number.\n\n";
+            continue;
+        }
+        break;
+    }
     return WithdrawNumber;
 }
 
@@ -318,11 +324,17 @@ void DisplayDepositScreen() {
 
 int ReadDepositAmount() {
     int DepositAmount = 0;
-    do
-    {
+    while (true) {
         cout << "Enter a positive deposit amount ? ";
         cin >> DepositAmount;
-    } while (DepositAmount <= 0);
+        if (cin.fail() || DepositAmount <= 0) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input! Please enter a positive number.\n";
+            continue;
+        }
+        break;
+    }
     return DepositAmount;
 }
 
@@ -346,22 +358,22 @@ void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
 
         system("cls");
         DisplayQuickWithdrawScreen();
-        GoBackToMainMenue();
+        GoBackToMainMenu();
         break;
     case enMainMenuOptions::eNormalWithdraw:
         system("cls");
         PerformWithdrawAction();
-        GoBackToMainMenue();
+        GoBackToMainMenu();
         break;
     case enMainMenuOptions::eDeposit:
         system("cls");
         PerformDepositAmount();
-        GoBackToMainMenue();
+        GoBackToMainMenu();
         break;
     case enMainMenuOptions::eCheckBalance:
         system("cls");
         DisplayBalanceScreen();
-        GoBackToMainMenue();
+        GoBackToMainMenu();
         break;
     case enMainMenuOptions::eLogout:
         system("cls");
@@ -409,7 +421,7 @@ void Login(){
     ShowMainMenu();
 }
 
-void GoBackToMainMenue() {
+void GoBackToMainMenu() {
     system("Color 0F");
     cout << "\n\nPress any key to go back to Main Menue...";
     system("pause>0");
