@@ -32,7 +32,6 @@ struct stClientInfo {
     int AccountBalance = 0;
 };
 
-
 stClientInfo CurrentClient;
 
 vector <string> SplitString(string S1, string Delim){
@@ -121,8 +120,9 @@ bool LoadClientInfo(string AccountNumber, string PinCode){
 
 short GetBalanceToWithdraw(enQuickWithdraw QuickWithdraw){
     short Balance = 0;
-    while (QuickWithdraw == enQuickWithdraw::enExit) {
+    if (QuickWithdraw == enQuickWithdraw::enExit) {
         GoBackToMainMenue();
+        return 0;
     }
     switch (QuickWithdraw)
     {
@@ -233,25 +233,32 @@ vector <stClientInfo> SaveClientsDataToFile(string FileName, vector <stClientInf
     return vClients;
 }
 
+void UpdateClientInFile(stClientInfo UpdateClient){
+    vector <stClientInfo> vClients = LoadClientsDataFromFile(ClientsFileName);
+
+    for (stClientInfo& C : vClients) {
+        if (C.AccountNumber == UpdateClient.AccountNumber)
+            C = UpdateClient;
+        SaveClientsDataToFile(ClientsFileName, vClients);
+    }
+}
+
 void PerformBalanceWithdraw(enQuickWithdraw QuickWithdraw) {
     short Balance = GetBalanceToWithdraw(QuickWithdraw);
     vector <stClientInfo> vClients = LoadClientsDataFromFile(ClientsFileName);
     char Choice = 'n';
-    if (CurrentClient.AccountBalance < Balance) {
-        cout << "\nThe amount exceeds your account balance, make another choice";
-        GoBackToMainMenue();
+    while (CurrentClient.AccountBalance < Balance) {
+        cout << "\nThe amount exceeds your account balance, make another choice\n\n";
+        QuickWithdraw = ReadBalanceWithdrawChoice();
+        Balance = GetBalanceToWithdraw(QuickWithdraw);
     }
-    else {
         cout << "\nAre you sure you want to perform this transaction ? (Y/N) ? ";
         cin >> Choice;
         if (Choice == 'y' || Choice == 'Y') {
             CurrentClient.AccountBalance -= Balance;
             cout << "\nDone Successfully, new balance is " << CurrentClient.AccountBalance << endl;
-            ConvertClientRecordToLine(CurrentClient);
-            SaveClientsDataToFile(ClientsFileName, vClients);
-        }
-    }
-    
+            UpdateClientInFile(CurrentClient);
+    } 
 }
 
 void DisplayQuickWithdrawScreen() {
