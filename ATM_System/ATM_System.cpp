@@ -310,6 +310,35 @@ void PerformWithdrawAction() {
     }
 }
 
+void DisplayDepositScreen() {
+    cout << "===========================================\n";
+    cout << "\t\tDeposit Screen\n";
+    cout << "===========================================\n";
+}
+
+int ReadDepositAmount() {
+    int DepositAmount = 0;
+    do
+    {
+        cout << "Enter a positive deposit amount ? ";
+        cin >> DepositAmount;
+    } while (DepositAmount <= 0);
+    return DepositAmount;
+}
+
+void PerformDepositAmount() {
+    DisplayDepositScreen();
+    int DepositAmount = ReadDepositAmount();
+    char Answer = 'n';
+    cout << "\nAre you sure you want to perform this transaction ? (Y/N) ? ";
+    cin >> Answer;
+    if (Answer == 'y' || Answer == 'Y') {
+        CurrentClient.AccountBalance += DepositAmount;
+        cout << "\nDone Successfully. New balance is: " << CurrentClient.AccountBalance << endl;
+        UpdateClientInFile(CurrentClient);
+    }
+}
+
 void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
     switch (MainMenuOptions)
     {
@@ -326,6 +355,8 @@ void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
         break;
     case enMainMenuOptions::eDeposit:
         system("cls");
+        PerformDepositAmount();
+        GoBackToMainMenue();
         break;
     case enMainMenuOptions::eCheckBalance:
         system("cls");
