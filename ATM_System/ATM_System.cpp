@@ -277,6 +277,39 @@ void DisplayQuickWithdrawScreen() {
     PerformBalanceWithdraw(ReadBalanceWithdrawChoice());
 }
 
+void DisplayNormalWithdrawScreen() {
+    cout << "===========================================\n";
+    cout << "\t\tNormal Withdraw Screen\n";
+    cout << "===========================================\n";
+}
+
+int ReadNormalWithdraw() {
+    int WithdrawNumber = 0;
+    do
+    {
+    cout << "Enter an amount multiple of 5's ? ";
+    cin >> WithdrawNumber;
+    } while (WithdrawNumber < 0 || WithdrawNumber % 5 != 0);
+    return WithdrawNumber;
+}
+
+void PerformWithdrawAction() {
+    char Choice = 'n';
+    DisplayNormalWithdrawScreen();
+    int WithdrawNumber = ReadNormalWithdraw();
+    while (CurrentClient.AccountBalance < WithdrawNumber) {
+        cout << "\nThe amount exceeds your account balance, make another choice\n\n";
+        WithdrawNumber = ReadNormalWithdraw();
+    }
+    cout << "Are you sure you want to perform this transaction ? (Y/N) ? ";
+    cin >> Choice;
+    if (Choice == 'y' || Choice == 'Y') {
+        CurrentClient.AccountBalance -= WithdrawNumber;
+        cout << "\nDone Successfully, new balance is " << CurrentClient.AccountBalance << endl;
+        UpdateClientInFile(CurrentClient);
+    }
+}
+
 void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
     switch (MainMenuOptions)
     {
@@ -288,6 +321,8 @@ void PerformMainMenuOption(enMainMenuOptions MainMenuOptions){
         break;
     case enMainMenuOptions::eNormalWithdraw:
         system("cls");
+        PerformWithdrawAction();
+        GoBackToMainMenue();
         break;
     case enMainMenuOptions::eDeposit:
         system("cls");
